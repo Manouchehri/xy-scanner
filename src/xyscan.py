@@ -72,10 +72,18 @@ if __name__ == '__main__':
 	f_hi  = 601e6
 	RBW   = 30e3
 	num_freqs = 601	# This seems to be fixed for the DSA815
+
+        vdll = None
+        #Normally you don't need a specific VISA DLL. If you have several
+	#installed you might though (for example: you've installed Agilent
+	#VISA alongside NI-VISA to support different test equipment).
+        #The following shows the use of the Agilent VISA DLL, which seems
+        #to work when the NI one wasn't getting picked up:
+        #vdll = r"c:\Windows\System32\agvisa32.dll"
 	
 	# DSA815 controller
 	scope = DSA815()
-	scope.conn("USB0::0x1AB1::0x0960::DSA8A134700016::INSTR")	
+	scope.conn("USB0::0x1AB1::0x0960::DSA8A134700016::INSTR", vdll)	
 	scope.set_freq_limits(f_low, f_hi)
 	scope.set_RBW(RBW)
 	scope.enable_RF(True)

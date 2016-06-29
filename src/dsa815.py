@@ -23,9 +23,10 @@ class DSA815(object):
 		
 		Args:
 			constr (string): the location of the spectrum analyzer
+			visadll (string): Optional location of specific VISA DLL, required
+			                  if you have multiple VISAs installed.
 		"""
-		rm = visa.ResourceManager(r"c:\Windows\System32\agvisa32.dll")
-		#rm = visa.ResourceManager(visadll)
+		rm = visa.ResourceManager(visadll)
 		self.inst = rm.open_resource(constr)
 	
 

@@ -1,5 +1,6 @@
-# xy-scanner
-Proof-of-concept code for an XY scanner, using an M3D printer and a DSA815 spectrum analyzer.
+# XY-Scanner
+
+Proof-of-concept code for an XY scanner, using an M3D printer. Example also includes a DSA815 spectrum analyzer driver to measure emissions at different frequencies.
 
 This project has three pieces of code:
 
