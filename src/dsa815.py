@@ -17,15 +17,15 @@ class DSA815(object):
 		pass
 
 		
-	def conn(self, constr="USB0::0x1AB1::0x0960::DSA8Axxxxxxx::INSTR"):
+	def conn(self, constr="USB0::0x1AB1::0x0960::DSA8Axxxxxxx::INSTR", visadll=None):
 		"""
 		Attempt to connect to instrument
 		
 		Args:
 			constr (string): the location of the spectrum analyzer
 		"""
-		
-		rm = visa.ResourceManager()
+		rm = visa.ResourceManager(r"c:\Windows\System32\agvisa32.dll")
+		#rm = visa.ResourceManager(visadll)
 		self.inst = rm.open_resource(constr)
 	
 
