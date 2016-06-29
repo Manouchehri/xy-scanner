@@ -37,187 +37,188 @@ import serial
 import time
 
 class M3D(object):
-	# Constructor/destructor
-	def __init__(self):
-		self.serialPort = None
+    # Constructor/destructor
+    def __init__(self):
+        self.serialPort = None
 
-	def dis(self):
-		self.__disconnect()
-		del self.serialPort
-		
-	# Setup functions
-	def start(self, port):
-		"""
-		Attempts to set up the M3D printer.
-	
-		Args:
-			port (string): the COM port to be used (ex: "COM4")
-		Returns:
-			true if the printer is set up; otherwise false
-		"""
-		
-		baud = 115200
-		if not self.__connect(port, baud):
-			print "Could not connect to printer."
-			return False
-			
-		if not self.__switchToFirmware():
-			print "Could not switch to firmware mode."
-			return False
-		
-		return True
-	
-	
-	def __connect(self, port, baud):
-		"""
-		Opens a serial connection with the M3D printer.
-		
-		Args:
-			port: the COM port to be used (ex: "COM4")
-			baud: the baudrate to be used (ex: 115200)
-		Returns:
-			true if the serial port was successfully opened; otherwise false
-		"""
-		
-		# Try to connect to port
-		try:
-			self.serialPort = serial.Serial(port, baud)
-		except serial.SerialException as ex:
-			print "Port is unavailable"
-			self.serialPort = None
-			return False
-		
-		return True
-	
-	
-	def __switchToFirmware(self):
-		"""
-		Attempts to switch the printer into firmware mode.
-		
-		Returns:
-			true if the switch was successful; otherwise false
-		"""
-		
-		# Fail if the serial port isn't opened
-		if self.serialPort == None:
-			return False
-			
-		# Tell the printer to switch to firmware mode
-		self.serialPort.write("Q")
-		time.sleep(0.5)
-		
-		# Attempt to reconnect to the printer
-		try:
-			self.serialPort.close()
-			time.sleep(0.5)
-			self.serialPort.open()
-		except serial.SerialException as ex:
-			# Failed to reconnect
-			return False
-		
-		# All is well!
-		return True
-	
-		
-	def __disconnect(self):
-		"""
-		Closes the serial connection.
-		"""
-		
-		if self.serialPort != None:
-			self.serialPort.close()
-			self.serialPort = None
-	
-	
-	
-	# Movement functions 	
-	def __sendCommand(self, command):
-		"""
-		Sends the string "command" to the printer.
-		Blocks until an "ok" reply comes back.
-		
-		Args:
-			command (string): the command to be sent
-		"""
-		
-		# Make sure we're not sitting on any data and send the command
-		self.serialPort.reset_input_buffer()
-		self.serialPort.write(command)
-		
-		# Wait until a reply comes back
-		while(self.serialPort.in_waiting == 0):
-			pass
-		
-		
- 	def move(self, x = 0, y = 0, z = 0):
-		"""
-		Moves the printer head to the position (x, y, z)
-		
-		Args:
-			x, y, z (number): coordinates
-		"""
-		
-		# Use G0 to move
-		self.__sendCommand("G0 X" + str(x) + " Y" + str(y) + " Z" + str(z) + " S1")
-	
-		
-	def stop(self):
-		"""
-		Performs an emergency stop
-		"""
-		
-		# Use M0 to stop
-		self.__sendCommand("M0")
-		
-		
-	def wait(self, ms):
-		"""
-		Waits in place for a fixed amount of time
-		
-		Args:
-			ms (integer): amount of time to wait, in milliseconds
-		"""
-		
-		# Wait for some time with G4
-		self.__sendCommand("G4 P" + str(ms))
-		
-		
-	def setAbsolute(self):
-		"""
-		Puts the printer head in absolute coordinate mode
-		"""
-		
-		# Use G90 to switch to absolute mode
-		self.__sendCommand("G90")
-		
-		
-	def setRelative(self):
-		"""
-		Puts the printer head in relative coordinate mode
-		"""
-		
-		# Use G91 to switch to relative mode
-		self.__sendCommand("G91")
-	
+    def dis(self):
+        self.__disconnect()
+        del self.serialPort
+        
+    # Setup functions
+    def start(self, port):
+        """
+        Attempts to set up the M3D printer.
+    
+        Args:
+            port (string): the COM port to be used (ex: "COM4")
+        Returns:
+            true if the printer is set up; otherwise false
+        """
+        
+        baud = 115200
+        if not self.__connect(port, baud):
+            raise IOError("Could not connect to printer")
+            
+        if not self.__switchToFirmware():
+            raise IOError("Could not switch to firmware mode.")
+        
+        return True
+    
+    
+    def __connect(self, port, baud):
+        """
+        Opens a serial connection with the M3D printer.
+        
+        Args:
+            port: the COM port to be used (ex: "COM4")
+            baud: the baudrate to be used (ex: 115200)
+        Returns:
+            true if the serial port was successfully opened; otherwise false
+        """
+        
+        # Try to connect to port
+        #try:
+        self.serialPort = serial.Serial(port, baud)
+        #except serial.SerialException as ex:
+        #    print "Port is unavailable"
+        #    self.serialPort = None
+        #    return False
+        
+        return True
+    
+    
+    def __switchToFirmware(self):
+        """
+        Attempts to switch the printer into firmware mode.
+        
+        Returns:
+            true if the switch was successful; otherwise false
+        """
+        
+        # Fail if the serial port isn't opened
+        if self.serialPort == None:
+            return False
+            
+        # Tell the printer to switch to firmware mode
+        self.serialPort.write("Q")
+        time.sleep(0.5)
+        
+        # Attempt to reconnect to the printer
+        self.serialPort.close()
+        time.sleep(0.5)
+        self.serialPort.open()
+        
+        # All is well!
+        return True
+    
+        
+    def __disconnect(self):
+        """
+        Closes the serial connection.
+        """
+        
+        if self.serialPort != None:
+            self.serialPort.close()
+            self.serialPort = None
+    
+    
+    
+    # Movement functions    
+    def __sendCommand(self, command):
+        """
+        Sends the string "command" to the printer.
+        Blocks until an "ok" reply comes back.
+        
+        Args:
+            command (string): the command to be sent
+        """
+        
+        # Make sure we're not sitting on any data and send the command
+        if hasattr(self.serialPort, 'flushInput'):
+            self.serialPort.flushInput()
+        else:
+            self.serialPort.reset_input_buffer()
+        self.serialPort.write(command)
+        
+        # Wait until a reply comes back
+        if (hasattr(self.serialPort, 'in_waiting')):
+            while(self.serialPort.in_waiting == 0):
+                pass
+        else:
+            while(self.serialPort.inWaiting() == 0):
+                pass
+        
+        
+    def move(self, x = 0, y = 0, z = 0):
+        """
+        Moves the printer head to the position (x, y, z)
+        
+        Args:
+            x, y, z (number): coordinates
+        """
+        
+        # Use G0 to move
+        self.__sendCommand("G0 X" + str(x) + " Y" + str(y) + " Z" + str(z) + " S1")
+    
+        
+    def stop(self):
+        """
+        Performs an emergency stop
+        """
+        
+        # Use M0 to stop
+        self.__sendCommand("M0")
+        
+        
+    def wait(self, ms):
+        """
+        Waits in place for a fixed amount of time
+        
+        Args:
+            ms (integer): amount of time to wait, in milliseconds
+        """
+        
+        # Wait for some time with G4
+        self.__sendCommand("G4 P" + str(ms))
+        
+        
+    def setAbsolute(self):
+        """
+        Puts the printer head in absolute coordinate mode
+        """
+        
+        # Use G90 to switch to absolute mode
+        self.__sendCommand("G90")
+        
+        
+    def setRelative(self):
+        """
+        Puts the printer head in relative coordinate mode
+        """
+        
+        # Use G91 to switch to relative mode
+        self.__sendCommand("G91")
+    
 
-	
+    
 """
 Example code to control the printer
 """
 if __name__ == '__main__':
-	test = M3D()
-	
-	print "Setting up..."
-	test.start("COM4")
-	
-	print "Testing movement..."
-	test.setRelative()
-	test.move( 10,  10, 0)
-	test.move(-10,   0, 0)
-	test.move(  0,  10, 0)
-	test.wait(500)
-	test.move(  0,  -20, 1)
-	
-	print "Tearing down..."
-	# Happens automatically
-	
+    test = M3D()
+    
+    print "Setting up..."
+    test.start("COM53")
+    
+    print "Testing movement..."
+    test.setRelative()
+    test.move( 10,  10, 0)
+    test.move(-10,   0, 0)
+    test.move(  0,  10, 0)
+    test.wait(500)
+    test.move(  0,  -20, 1)
+    
+    print "Tearing down..."
+    # Happens automatically
+    
