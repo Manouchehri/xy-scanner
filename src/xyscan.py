@@ -18,7 +18,7 @@ from time import sleep
 # Plotting
 import matplotlib.pyplot as plt
 import numpy as np
-
+import pickle
 
 def plotHeatmap(data, x_min, x_max, y_min, y_max, filename):
 	"""
@@ -51,10 +51,10 @@ def plotHeatmap(data, x_min, x_max, y_min, y_max, filename):
 if __name__ == '__main__':
 
 	# Scan layout
-	x_step = 5		# Step size, in mm
-	y_step = 2		# Step size, in mm
-	x_steps = 4		# Number of steps to take
-	y_steps = 10	# Number of steps to take
+	x_step = 1		# Step size, in mm
+	y_step = 1		# Step size, in mm
+	x_steps = 20		# Number of steps to take
+	y_steps = 40	# Number of steps to take
 	
 	x_max = x_step * x_steps	# Size of the grid we're measuring
 	y_max = y_step * y_steps	# Note that we'll never reach x = x_max
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 	
 	# M3D controller
 	printer = M3D()
-	printer.start("COM4")
+	printer.start("COM53")
 	printer.setRelative()
 	printer.move(0, 0, 0)	# Change me to move to bottom left of chip
 	
@@ -116,6 +116,8 @@ if __name__ == '__main__':
 			printer.move(0, y_step)
 	
 	printer.stop()
+
+	pickle.dump(scanData, open("scandata.p", "wb"))
 	
 	
 	# Plot scan data
