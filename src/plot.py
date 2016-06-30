@@ -11,7 +11,7 @@ scanData = pickle.load(open('scanData.p', 'rb'))
 maxfreq = np.zeros((20,40))
 for x in range(0, 20):
     for y in range(0, 40):
-        maxfreq[x][y] = max(scanData[x][y][94:98])
+        maxfreq[x][y] = max(scanData[x][y][94:99])
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
@@ -29,6 +29,11 @@ N = G/G.max()  # normalize 0..1
 surf = ax.plot_surface(
     X, Y, Z, rstride=1, cstride=1, cmap=cm.jet, #facecolors=cm.jet(N)
     linewidth=0, antialiased=False, shade=False)
-plt.show()
 
-    
+plt.xlabel("X Position (mm)")
+plt.ylabel("Y Position (mm)")
+ax.set_zlabel("Maximum Amplitude (dB)")
+
+plt.title("Measurement of 94-98 MHz Emmissions")
+
+plt.show()
