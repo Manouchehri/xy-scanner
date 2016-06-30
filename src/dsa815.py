@@ -26,7 +26,10 @@ class DSA815(object):
 			visadll (string): Optional location of specific VISA DLL, required
 			                  if you have multiple VISAs installed.
 		"""
-		rm = visa.ResourceManager(visadll)
+		if visadll:
+                        rm = visa.ResourceManager(visadll)
+                else:
+                        rm = visa.ResourceManager()
 		self.inst = rm.open_resource(constr)
 	
 
